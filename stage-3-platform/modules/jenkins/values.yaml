@@ -1,0 +1,229 @@
+controller:
+
+  image:
+    registry: docker.io
+    repository: jenkins/jenkins
+    tag: lts-jdk21
+
+  serviceType: ClusterIP
+
+  numExecutors: 0
+
+  executorMode: NORMAL
+
+  admin:
+
+    username: ${admin_user}
+
+    password: ${admin_password}
+
+  resources:
+
+    requests:
+      cpu: 500m
+      memory: 1Gi
+
+    limits:
+      cpu: "2"
+      memory: 4Gi
+
+  persistence:
+
+    enabled: true
+
+    storageClass: ${storage_class}
+
+    size: ${storage_size}
+
+    accessMode: ReadWriteOnce
+
+  servicePort: 8080
+
+  targetPort: 8080
+
+  installLatestPlugins: true
+
+  installLatestSpecifiedPlugins: true
+
+  initializeOnce: true
+
+  overwritePlugins: true
+
+  disableRememberMe: false
+
+  javaOpts: >-
+    -Djenkins.install.runSetupWizard=false
+
+  JCasC:
+
+    enabled: true
+
+  installPlugins:
+
+    - kubernetes
+
+    - workflow-aggregator
+
+    - workflow-job
+
+    - workflow-api
+
+    - workflow-cps
+
+    - git
+
+    - github
+
+    - github-branch-source
+
+    - git-client
+
+    - credentials
+
+    - credentials-binding
+
+    - ssh-credentials
+
+    - configuration-as-code
+
+    - job-dsl
+
+    - blueocean
+
+    - docker-workflow
+
+    - pipeline-stage-view
+
+    - pipeline-github-lib
+
+    - pipeline-utility-steps
+
+    - ws-cleanup
+
+    - matrix-auth
+
+    - role-strategy
+
+    - ansicolor
+
+    - timestamper
+
+    - htmlpublisher
+
+    - warnings-ng
+
+    - sonar
+
+    - junit
+
+    - slack
+
+    - prometheus
+
+    - kubernetes-cli
+
+
+
+controller:
+
+  JCasC:
+
+    configScripts:
+
+      security: |
+        jenkins:
+
+          systemMessage: "Snapcart DevOps Platform"
+
+          numExecutors: 0
+
+          mode: NORMAL
+
+          authorizationStrategy:
+            loggedInUsersCanDoAnything:
+              allowAnonymousRead: false
+
+          securityRealm:
+            local:
+              allowsSignup: false
+
+      location: |
+        unclassified:
+
+          location:
+            url: "https://jenkins.snapcart.dev"
+
+      kubernetes: |
+        jenkins:
+
+          clouds:
+
+            - kubernetes:
+
+                name: "kubernetes"
+
+                serverUrl: "https://kubernetes.default"
+
+                namespace: "jenkins"
+
+                jenkinsUrl: "http://jenkins.jenkins.svc.cluster.local:8080"
+
+                jenkinsTunnel: "jenkins-agent:50000"
+
+                containerCapStr: "20"
+
+                retentionTimeout: 5
+
+                templates:
+
+                  - name: "default-agent"
+
+                    namespace: "jenkins"
+
+                    label: "kubernetes"
+
+                    serviceAccount: "jenkins"
+
+                    nodeUsageMode: NORMAL
+
+                    yamlMergeStrategy: override
+
+                    idleMinutes: 5
+
+                    instanceCap: 20
+
+                    containers:
+
+                      - name: jnlp
+
+                        image: jenkins/inbound-agent:latest
+
+                        ttyEnabled: true
+
+                        workingDir: /home/jenkins/agent
+
+                        resourceRequestCpu: "250m"
+
+                        resourceRequestMemory: "512Mi"
+
+                        resourceLimitCpu: "1"
+
+                        resourceLimitMemory: "1Gi"
+
+      appearance: |
+        unclassified:
+
+          themeManager:
+            disableUserThemes: true
+
+      prometheus: |
+        unclassified:
+
+          prometheusConfiguration:
+            collectingMetricsPeriodInSeconds: 30
+
+      crumb: |
+        jenkins:
+          crumbIssuer:
+            standard:
+              excludeClientIPFromCrumb: true

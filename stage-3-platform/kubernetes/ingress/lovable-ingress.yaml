@@ -1,0 +1,59 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: lovable-main-ingress
+  namespace: lovable-core
+  annotations:
+    kubernetes.io/ingress.class: alb
+
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+
+    # HTTP and HTTPS listeners
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80},{"HTTPS":443}]'
+
+    # Redirect HTTP -> HTTPS
+    alb.ingress.kubernetes.io/ssl-redirect: "443"
+
+    # ACM certificates (comma-separated)
+    alb.ingress.kubernetes.io/certificate-arn: >
+      arn:aws:acm:ap-south-1:457724887427:certificate/CERT-1,
+      arn:aws:acm:ap-south-1:457724887427:certificate/CERT-2,
+      arn:aws:acm:ap-south-1:457724887427:certificate/CERT-3
+
+spec:
+  ingressClassName: alb
+
+  rules:
+    - host: lovable.snapcart.dev
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: lovable-frontend
+                port:
+                  number: 80
+
+    - host: api.snapcart.dev
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: api-gateway
+                port:
+                  number: 80
+
+    - host: "*.previews.snapcart.dev"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: lovable-me-proxy
+                port:
+                  number: 80
