@@ -1,73 +1,14 @@
-data "tls_certificate" "github" {
-  url = "https://token.actions.githubusercontent.com"
-}
+module "github_oidc" {
 
-resource "aws_iam_openid_connect_provider" "github" {
+  source = "./modules/github-oidc"
 
-  url = "https://token.actions.githubusercontent.com"
+  github_owner = "ISHADOW007"
 
-  client_id_list = [
-    "sts.amazonaws.com"
-  ]
+  github_owner_id = "149693065"
 
-  thumbprint_list = [
-    data.tls_certificate.github.certificates[0].sha1_fingerprint
-  ]
-}
+  github_repository = "lovable-terraform"
 
-data "aws_iam_policy_document" "github_assume_role" {
+  github_repository_id = "1315201546"
 
-  statement {
-
-    effect = "Allow"
-
-    actions = [
-      "sts:AssumeRoleWithWebIdentity"
-    ]
-
-    principals {
-
-      type = "Federated"
-
-      identifiers = [
-        aws_iam_openid_connect_provider.github.arn
-      ]
-    }
-
-    condition {
-
-      test = "StringEquals"
-
-      variable = "token.actions.githubusercontent.com:aud"
-
-      values = [
-        "sts.amazonaws.com"
-      ]
-    }
-
-    condition {
-
-      test = "StringLike"
-
-      variable = "token.actions.githubusercontent.com:sub"
-
-      values = [
-        "repo:${var.github_owner}/${var.github_repository}:*"
-      ]
-    }
-  }
-}
-
-resource "aws_iam_role" "github_actions" {
-
-  name = "github-actions-terraform-role"
-
-  assume_role_policy = data.aws_iam_policy_document.github_assume_role.json
-}
-
-resource "aws_iam_role_policy_attachment" "administrator" {
-
-  role = aws_iam_role.github_actions.name
-
-  policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
+  aws_region = "ap-south-1"
 }

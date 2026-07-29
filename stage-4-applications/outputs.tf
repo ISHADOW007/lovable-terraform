@@ -1,9 +1,12 @@
 output "github_actions_role_arn" {
 
-  value = aws_iam_role.github_actions.arn
+  value = module.github_oidc.github_actions_role_arn
+
 }
+
 
 output "oidc_provider_arn" {
 
-  value = aws_iam_openid_connect_provider.github.arn
+  value = module.github_oidc.oidc_provider_arn
+
 }
