@@ -4,10 +4,12 @@
 
 data "terraform_remote_state" "infra" {
 
-  backend = "local"
+  backend = "s3"
 
   config = {
-    path = "../stage-1-infra/terraform.tfstate"
+    bucket = "lovable-terraform-state-457724887427"
+    key    = "stage-1-network/terraform.tfstate"
+    region = "ap-south-1"
   }
 
 }
@@ -18,14 +20,15 @@ data "terraform_remote_state" "infra" {
 
 data "terraform_remote_state" "addons" {
 
-  backend = "local"
+  backend = "s3"
 
   config = {
-    path = "../stage-2-addons/terraform.tfstate"
+    bucket = "lovable-terraform-state-457724887427"
+    key    = "stage-2-addons/terraform.tfstate"
+    region = "ap-south-1"
   }
 
 }
-
 
 
 module "argocd" {
