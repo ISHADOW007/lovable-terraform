@@ -17,3 +17,6 @@ terraform apply
 
 
 aws s3 ls s3://lovable-terraform-state-457724887427/ --recursive
+
+
+//
