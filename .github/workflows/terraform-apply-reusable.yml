@@ -32,6 +32,28 @@ jobs:
           echo "Repository: $GITHUB_REPOSITORY"
           echo "Ref: $GITHUB_REF"
           echo "Actor: $GITHUB_ACTOR"
+          echo "Event: $GITHUB_EVENT_NAME"
+
+
+      - name: Check OIDC Token Availability
+        run: |
+          if [ -z "$ACTIONS_ID_TOKEN_REQUEST_TOKEN" ]; then
+            echo "OIDC token is missing"
+            exit 1
+          else
+            echo "OIDC token is available"
+          fi
+
+
+      - name: Decode OIDC Claims
+        run: |
+          TOKEN=$(curl -s \
+          -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+          "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=sts.amazonaws.com" \
+          | jq -r '.value')
+
+          echo "OIDC Claims:"
+          echo $TOKEN | cut -d "." -f2 | base64 -d | jq
 
 
       - name: Configure AWS Credentials
@@ -39,6 +61,7 @@ jobs:
         with:
           role-to-assume: arn:aws:iam::457724887427:role/github-actions-terraform-role
           aws-region: ap-south-1
+          role-session-name: github-actions-terraform
 
 
       - name: Verify AWS Identity
