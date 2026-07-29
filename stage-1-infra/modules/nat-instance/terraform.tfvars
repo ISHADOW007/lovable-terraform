@@ -1,0 +1,1 @@
+cidr_blocks = [var.vpc_cidr]
