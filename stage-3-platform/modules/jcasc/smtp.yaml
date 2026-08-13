@@ -1,0 +1,17 @@
+unclassified:
+
+  mailer:
+
+    smtpHost: "smtp.gmail.com"
+
+    authentication:
+
+      username: "${SMTP_USERNAME}"
+
+      password: "${SMTP_PASSWORD}"
+
+    useSsl: false
+
+    useTls: true
+
+    replyToAddress: "no-reply@snapcart.dev"

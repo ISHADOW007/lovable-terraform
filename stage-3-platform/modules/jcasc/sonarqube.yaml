@@ -1,0 +1,33 @@
+tool:
+
+  sonarRunnerInstallation:
+
+    installations:
+
+      - name: "SonarScanner"
+
+        properties:
+
+          - installSource:
+
+              installers:
+
+                - sonarRunnerInstaller:
+                    id: "latest"
+
+
+unclassified:
+
+  sonarGlobalConfiguration:
+
+    buildWrapperEnabled: false
+
+    installations:
+
+      - name: "SonarQube"
+
+        serverUrl: "https://sonarqube.snapcart.dev"
+
+        serverAuthenticationToken: "sonar-token"
+
+        webhookSecretId: ""

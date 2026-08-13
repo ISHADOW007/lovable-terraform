@@ -1,0 +1,93 @@
+###########################################################
+# Jenkins Kubernetes Agent
+###########################################################
+
+FROM jenkins/inbound-agent:latest-jdk21
+
+USER root
+
+###########################################################
+# Install Base Packages
+###########################################################
+
+RUN apt-get update && \
+    apt-get install -y \
+        curl \
+        wget \
+        unzip \
+        git \
+        jq \
+        gnupg \
+        lsb-release \
+        ca-certificates \
+        apt-transport-https && \
+    rm -rf /var/lib/apt/lists/*
+
+###########################################################
+# Install Docker CLI
+###########################################################
+
+RUN install -m 0755 -d /etc/apt/keyrings && \
+    curl -fsSL https://download.docker.com/linux/debian/gpg | \
+    gpg --dearmor -o /etc/apt/keyrings/docker.gpg && \
+    chmod a+r /etc/apt/keyrings/docker.gpg && \
+    echo \
+    "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian \
+    $(. /etc/os-release && echo $VERSION_CODENAME) stable" | \
+    tee /etc/apt/sources.list.d/docker.list > /dev/null && \
+    apt-get update && \
+    apt-get install -y docker-ce-cli && \
+    rm -rf /var/lib/apt/lists/*
+
+###########################################################
+# kubectl
+###########################################################
+
+RUN curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" && \
+    install -m 0755 kubectl /usr/local/bin/kubectl && \
+    rm kubectl
+
+###########################################################
+# Helm
+###########################################################
+
+RUN curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+
+
+
+###########################################################
+# Trivy
+###########################################################
+
+RUN wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | \
+    gpg --dearmor -o /usr/share/keyrings/trivy.gpg && \
+    echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb generic main" | \
+    tee /etc/apt/sources.list.d/trivy.list && \
+    apt-get update && \
+    apt-get install -y trivy && \
+    rm -rf /var/lib/apt/lists/*
+
+###########################################################
+# yq
+###########################################################
+
+RUN wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 \
+    -O /usr/local/bin/yq && \
+    chmod +x /usr/local/bin/yq
+
+###########################################################
+# Verify Tools
+###########################################################
+
+RUN java -version && \
+    git --version && \
+    docker --version && \
+    kubectl version --client && \
+    helm version && \
+    trivy --version && \
+    jq --version && \
+    yq --version
+
+USER jenkins
+
+WORKDIR /home/jenkins/agent

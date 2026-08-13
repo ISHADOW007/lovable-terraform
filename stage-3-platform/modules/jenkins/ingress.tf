@@ -2,8 +2,9 @@ resource "kubernetes_ingress_v1" "this" {
 
   metadata {
 
-    name      = "jenkins"
-    namespace = "jenkins"
+    name = "jenkins"
+
+    namespace = var.namespace
 
     annotations = {
 
@@ -20,7 +21,13 @@ resource "kubernetes_ingress_v1" "this" {
       "alb.ingress.kubernetes.io/certificate-arn" = var.certificate_arn
 
       "external-dns.alpha.kubernetes.io/hostname" = var.hostname
+
+      "alb.ingress.kubernetes.io/healthcheck-path" = "/login"
+
+      "alb.ingress.kubernetes.io/success-codes" = "200,302"
+
     }
+
   }
 
   spec {
@@ -35,7 +42,7 @@ resource "kubernetes_ingress_v1" "this" {
 
         path {
 
-          path      = "/"
+          path = "/"
 
           path_type = "Prefix"
 
@@ -50,14 +57,23 @@ resource "kubernetes_ingress_v1" "this" {
                 number = 8080
 
               }
+
             }
+
           }
+
         }
+
       }
+
     }
+
   }
 
   depends_on = [
+
     helm_release.this
+
   ]
+
 }

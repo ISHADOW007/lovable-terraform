@@ -11,8 +11,6 @@ output "cluster_ca_certificate" {
   sensitive = true
 }
 
-
-
 output "region" {
   value = var.aws_region
 }
@@ -21,12 +19,21 @@ output "vpc_id" {
   value = module.vpc.vpc_id
 }
 
-
-
 output "oidc_provider_arn" {
   value = module.oidc.oidc_provider_arn
 }
 
 output "oidc_issuer_url" {
   value = module.oidc.oidc_issuer_url
+}
+
+output "node_security_group_id" {
+  value = module.security_groups.worker_security_group_id
+}
+
+output "private_subnet_ids" {
+  value = [
+    module.vpc.private_subnet_1_id,
+    module.vpc.private_subnet_2_id
+  ]
 }

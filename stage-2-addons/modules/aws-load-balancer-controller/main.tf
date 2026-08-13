@@ -5,3 +5,7 @@ resource "aws_iam_policy" "this" {
 
   policy = file("${path.module}/iam_policy.json")
 }
+
+
+
+

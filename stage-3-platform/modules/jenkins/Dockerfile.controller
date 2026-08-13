@@ -1,0 +1,53 @@
+############################################################
+# Jenkins Controller
+############################################################
+
+FROM jenkins/jenkins:lts-jdk21
+
+USER root
+
+############################################################
+# Install Utilities
+############################################################
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        git \
+        curl \
+        wget \
+        unzip \
+        jq \
+        vim \
+        ca-certificates && \
+    rm -rf /var/lib/apt/lists/*
+
+############################################################
+# JCasC Directory
+############################################################
+
+RUN mkdir -p /var/jenkins_home/casc_configs && \
+    chown -R jenkins:jenkins /var/jenkins_home
+
+USER jenkins
+
+############################################################
+# Install Plugins
+############################################################
+
+COPY plugins.txt /usr/share/jenkins/ref/plugins.txt
+
+RUN jenkins-plugin-cli \
+    --verbose \
+    --clean-download-directory \
+    --plugin-file /usr/share/jenkins/ref/plugins.txt
+
+############################################################
+# Environment
+############################################################
+
+ENV CASC_JENKINS_CONFIG=/var/jenkins_home/casc_configs
+ENV JAVA_OPTS="-Djenkins.install.runSetupWizard=false"
+
+EXPOSE 8080 50000
+
+VOLUME /var/jenkins_home

@@ -1,0 +1,9 @@
+tool:
+
+  git:
+
+    installations:
+
+      - name: Default
+
+        home: git

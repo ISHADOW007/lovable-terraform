@@ -2,14 +2,22 @@ controller:
 
   image:
     registry: docker.io
-    repository: jenkins/jenkins
-    tag: lts-jdk21
+    repository: satyamgrao007/lovable-jenkins-controller
+    tag: latest
+    pullPolicy: Always
 
   serviceType: ClusterIP
+
+  servicePort: 8080
+
+  targetPort: 8080
 
   numExecutors: 0
 
   executorMode: NORMAL
+
+  javaOpts: >-
+    -Djenkins.install.runSetupWizard=false
 
   admin:
 
@@ -37,193 +45,181 @@ controller:
 
     accessMode: ReadWriteOnce
 
-  servicePort: 8080
-
-  targetPort: 8080
-
-  installLatestPlugins: true
-
-  installLatestSpecifiedPlugins: true
-
   initializeOnce: true
 
-  overwritePlugins: true
+  overwritePlugins: false
+
+  installLatestPlugins: false
+
+  installLatestSpecifiedPlugins: false
+
+  installPlugins: []
 
   disableRememberMe: false
-
-  javaOpts: >-
-    -Djenkins.install.runSetupWizard=false
 
   JCasC:
 
     enabled: true
 
-  installPlugins:
+    defaultConfig: false
 
-    - kubernetes
+  #########################################################
+  # Mount ConfigMap
+  #########################################################
 
-    - workflow-aggregator
+  additionalVolumes:
 
-    - workflow-job
+    - name: jcasc-config
 
-    - workflow-api
+      configMap:
 
-    - workflow-cps
+        name: jenkins-jcasc
+
+  additionalVolumeMounts:
 
-    - git
+    - name: jcasc-config
+
+      mountPath: /var/jenkins_home/casc_configs
+
+      readOnly: true
+
+  #########################################################
+  # Environment Variables
+  #########################################################
+
+  containerEnv:
 
-    - github
+    - name: CASC_JENKINS_CONFIG
+      value: /var/jenkins_home/casc_configs
 
-    - github-branch-source
+    #####################################################
+    # Jenkins
+    #####################################################
 
-    - git-client
+    - name: JENKINS_ADMIN_USER
+      valueFrom:
+        secretKeyRef:
+          name: jenkins-secrets
+          key: JENKINS_ADMIN_USER
 
-    - credentials
+    - name: JENKINS_ADMIN_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: jenkins-secrets
+          key: JENKINS_ADMIN_PASSWORD
 
-    - credentials-binding
+    #####################################################
+    # GitHub (Application Repository)
+    #####################################################
 
-    - ssh-credentials
+    - name: GITHUB_USERNAME
+      valueFrom:
+        secretKeyRef:
+          name: jenkins-secrets
+          key: GITHUB_USERNAME
 
-    - configuration-as-code
+    - name: GITHUB_TOKEN
+      valueFrom:
+        secretKeyRef:
+          name: jenkins-secrets
+          key: GITHUB_TOKEN
 
-    - job-dsl
+    #####################################################
+    # GitOps Repository
+    #####################################################
 
-    - blueocean
+    - name: GITOPS_USERNAME
+      valueFrom:
+        secretKeyRef:
+          name: jenkins-secrets
+          key: GITOPS_USERNAME
 
-    - docker-workflow
+    - name: GITOPS_TOKEN
+      valueFrom:
+        secretKeyRef:
+          name: jenkins-secrets
+          key: GITOPS_TOKEN
 
-    - pipeline-stage-view
+    #####################################################
+    # DockerHub
+    #####################################################
 
-    - pipeline-github-lib
+    - name: DOCKERHUB_USERNAME
+      valueFrom:
+        secretKeyRef:
+          name: jenkins-secrets
+          key: DOCKERHUB_USERNAME
 
-    - pipeline-utility-steps
+    - name: DOCKERHUB_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: jenkins-secrets
+          key: DOCKERHUB_PASSWORD
 
-    - ws-cleanup
+    #####################################################
+    # SonarQube
+    #####################################################
 
-    - matrix-auth
+    - name: SONAR_TOKEN
+      valueFrom:
+        secretKeyRef:
+          name: jenkins-secrets
+          key: SONAR_TOKEN
 
-    - role-strategy
+    #####################################################
+    # SMTP
+    #####################################################
 
-    - ansicolor
+    - name: SMTP_USERNAME
+      valueFrom:
+        secretKeyRef:
+          name: jenkins-secrets
+          key: SMTP_USERNAME
 
-    - timestamper
+    - name: SMTP_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: jenkins-secrets
+          key: SMTP_PASSWORD
 
-    - htmlpublisher
+#########################################################
+# Jenkins Agent
+#########################################################
 
-    - warnings-ng
+agent:
 
-    - sonar
+  enabled: false
 
-    - junit
+#########################################################
+# RBAC
+#########################################################
 
-    - slack
+rbac:
 
-    - prometheus
+  create: false
 
-    - kubernetes-cli
+#########################################################
+# Service Account
+#########################################################
 
+serviceAccount:
 
+  create: false
 
-controller:
+  name: jenkins
 
-  JCasC:
+#########################################################
+# Network Policy
+#########################################################
 
-    configScripts:
+networkPolicy:
 
-      security: |
-        jenkins:
+  enabled: false
 
-          systemMessage: "Snapcart DevOps Platform"
+#########################################################
+# Persistence
+#########################################################
 
-          numExecutors: 0
+persistence:
 
-          mode: NORMAL
-
-          authorizationStrategy:
-            loggedInUsersCanDoAnything:
-              allowAnonymousRead: false
-
-          securityRealm:
-            local:
-              allowsSignup: false
-
-      location: |
-        unclassified:
-
-          location:
-            url: "https://jenkins.snapcart.dev"
-
-      kubernetes: |
-        jenkins:
-
-          clouds:
-
-            - kubernetes:
-
-                name: "kubernetes"
-
-                serverUrl: "https://kubernetes.default"
-
-                namespace: "jenkins"
-
-                jenkinsUrl: "http://jenkins.jenkins.svc.cluster.local:8080"
-
-                jenkinsTunnel: "jenkins-agent:50000"
-
-                containerCapStr: "20"
-
-                retentionTimeout: 5
-
-                templates:
-
-                  - name: "default-agent"
-
-                    namespace: "jenkins"
-
-                    label: "kubernetes"
-
-                    serviceAccount: "jenkins"
-
-                    nodeUsageMode: NORMAL
-
-                    yamlMergeStrategy: override
-
-                    idleMinutes: 5
-
-                    instanceCap: 20
-
-                    containers:
-
-                      - name: jnlp
-
-                        image: jenkins/inbound-agent:latest
-
-                        ttyEnabled: true
-
-                        workingDir: /home/jenkins/agent
-
-                        resourceRequestCpu: "250m"
-
-                        resourceRequestMemory: "512Mi"
-
-                        resourceLimitCpu: "1"
-
-                        resourceLimitMemory: "1Gi"
-
-      appearance: |
-        unclassified:
-
-          themeManager:
-            disableUserThemes: true
-
-      prometheus: |
-        unclassified:
-
-          prometheusConfiguration:
-            collectingMetricsPeriodInSeconds: 30
-
-      crumb: |
-        jenkins:
-          crumbIssuer:
-            standard:
-              excludeClientIPFromCrumb: true
+  enabled: false

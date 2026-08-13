@@ -1,0 +1,77 @@
+# ============================
+# Pipeline
+# ============================
+workflow-aggregator:608.v67378e9d3db_1
+pipeline-model-api:2.2277.v00573e73ddf1
+pipeline-model-definition:2.2277.v00573e73ddf1
+pipeline-model-extensions:2.2277.v00573e73ddf1
+pipeline-stage-step:322.vecffa_99f371c
+pipeline-stage-view
+pipeline-utility-steps
+
+# ============================
+# SCM
+# ============================
+git
+git-client
+github
+github-branch-source
+git-parameter
+
+# ============================
+# Kubernetes
+# ============================
+kubernetes
+kubernetes-client-api
+kubernetes-credentials
+
+# ============================
+# Docker
+# ============================
+docker-workflow
+
+# ============================
+# Configuration as Code
+# ============================
+configuration-as-code
+
+# ============================
+# Job DSL
+# ============================
+job-dsl
+
+# ============================
+# Credentials
+# ============================
+credentials
+credentials-binding
+plain-credentials
+ssh-credentials
+
+# ============================
+# Security
+# ============================
+matrix-auth
+role-strategy
+
+# ============================
+# SonarQube
+# ============================
+sonar
+
+# ============================
+# Notifications
+# ============================
+mailer
+email-ext
+
+# ============================
+# UI
+# ============================
+ansicolor
+timestamper
+
+# ============================
+# Utilities
+# ============================
+ws-cleanup

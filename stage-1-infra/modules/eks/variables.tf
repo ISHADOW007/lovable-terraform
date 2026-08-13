@@ -49,3 +49,10 @@ variable "min_size" {
 variable "max_size" {
   type = number
 }
+
+
+
+variable "node_security_group_id" {
+  description = "Security Group attached to worker nodes via Launch Template"
+  type        = string
+}

@@ -1,0 +1,23 @@
+jenkins:
+
+  systemMessage: |
+
+    ==========================================
+           Lovable DevSecOps Platform
+    ==========================================
+
+    Managed by:
+      • Terraform
+      • Helm
+      • JCasC
+      • Kubernetes
+
+    Manual configuration is discouraged.
+
+unclassified:
+
+  location:
+
+    url: "https://jenkins.snapcart.dev"
+
+    adminAddress: "devops@snapcart.dev"

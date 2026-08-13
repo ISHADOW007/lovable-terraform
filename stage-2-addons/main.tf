@@ -18,6 +18,24 @@ data "terraform_remote_state" "infra" {
 
 
 
+module "external_secrets_operator" {
+
+  source = "./modules/external-secrets-operator"
+
+  cluster_name = data.terraform_remote_state.infra.outputs.cluster_name
+
+  region = var.aws_region
+
+  oidc_provider_arn = data.terraform_remote_state.infra.outputs.oidc_provider_arn
+
+  oidc_provider_url = "https://${data.terraform_remote_state.infra.outputs.oidc_issuer_url}"
+
+  namespace = "external-secrets"
+
+}
+
+
+
 
 
 
@@ -110,3 +128,5 @@ module "ingress" {
     module.namespaces
   ]
 }
+
+

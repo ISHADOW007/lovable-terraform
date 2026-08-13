@@ -73,23 +73,21 @@ module "eks" {
   ]
 
   cluster_security_group_id = module.security_groups.cluster_security_group_id
-  worker_security_group_id  = module.security_groups.worker_security_group_id
+
+  worker_security_group_id = module.security_groups.worker_security_group_id
+
+  node_security_group_id = module.security_groups.worker_security_group_id
 
   node_group_name = "lovable-cluster-nodes"
 
-  instance_types = [
-    "t3.small"
-  ]
+  instance_types = ["t3.small"]
 
-  desired_size = 29
-
-  min_size     = 29
-  max_size     = 29
+  desired_size = 28
+  min_size     = 28
+  max_size     = 28
 
   tags = local.common_tags
-
 }
-
 
 
 module "oidc" {

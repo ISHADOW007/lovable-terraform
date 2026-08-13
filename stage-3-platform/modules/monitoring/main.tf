@@ -1,12 +1,3 @@
-resource "kubernetes_namespace" "this" {
-
-  metadata {
-
-    name = "monitoring"
-
-  }
-
-}
 
 
 
@@ -34,7 +25,7 @@ resource "helm_release" "this" {
 
   depends_on = [
 
-    kubernetes_namespace.this
+    
 
   ]
 

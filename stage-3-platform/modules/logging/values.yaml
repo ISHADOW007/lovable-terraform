@@ -1,0 +1,23 @@
+loki:
+  enabled: true
+  isDefault: false
+
+  image:
+    repository: grafana/loki
+    tag: "2.9.3"
+    pullPolicy: IfNotPresent
+
+  persistence:
+    enabled: true
+    storageClassName: gp2
+    size: 20Gi
+
+promtail:
+  enabled: true
+
+  config:
+    clients:
+      - url: http://logging-loki:3100/loki/api/v1/push
+
+grafana:
+  enabled: false

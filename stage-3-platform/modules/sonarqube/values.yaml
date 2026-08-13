@@ -1,0 +1,84 @@
+sonarqube:
+  image:
+    repository: sonarqube
+    tag: "9.9-community"
+    pullPolicy: IfNotPresent
+
+community:
+  enabled: true
+
+service:
+  type: ClusterIP
+  port: 9000
+
+persistence:
+  enabled: true
+  storageClass: gp2
+  size: 15Gi
+
+resources:
+  requests:
+    cpu: 250m
+    memory: 768Mi
+  limits:
+    cpu: "2"
+    memory: 2Gi
+
+postgresql:
+  enabled: false
+
+jdbcOverwrite:
+  enabled: true
+  jdbcUrl: ${jdbc_url}
+  jdbcUsername: ${jdbc_username}
+  jdbcPassword: ${jdbc_password}
+
+jvmOpts: >-
+  -Xms256m
+  -Xmx384m
+
+sonarProperties:
+  sonar.search.javaOpts: "-Xms128m -Xmx128m"
+  sonar.web.javaOpts: "-Xms192m -Xmx320m"
+  sonar.ce.javaOpts: "-Xms128m -Xmx192m"
+
+monitoringPasscode: "sonarqube-monitor-pass"
+
+prometheusExporter:
+  enabled: false
+
+prometheusMonitoring:
+  enabled: false
+
+serviceMonitor:
+  enabled: false
+
+plugins:
+  install: []
+
+securityContext:
+  fsGroup: 1000
+
+containerSecurityContext:
+  runAsUser: 1000
+
+readinessProbe:
+  initialDelaySeconds: 180
+  periodSeconds: 15
+  timeoutSeconds: 5
+  failureThreshold: 10
+
+livenessProbe:
+  initialDelaySeconds: 300
+  periodSeconds: 20
+  timeoutSeconds: 5
+  failureThreshold: 5
+
+startupProbe:
+  initialDelaySeconds: 300
+  periodSeconds: 20
+  timeoutSeconds: 5
+  failureThreshold: 30
+
+networkPolicy:
+  enabled: false

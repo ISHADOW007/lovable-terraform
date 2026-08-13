@@ -2,19 +2,132 @@ grafana:
 
   enabled: true
 
-  adminPassword: "ChangeMe123"
+  service:
+    type: ClusterIP
 
+  admin:
+    existingSecret: grafana-secret
+    userKey: admin_user
+    passwordKey: admin_password
+
+  persistence:
+    enabled: true
+    storageClassName: gp2
+    accessModes:
+      - ReadWriteOnce
+    size: 10Gi
+
+  dashboardProviders:
+
+    dashboardproviders.yaml:
+
+      apiVersion: 1
+
+      providers:
+
+        - name: default
+          orgId: 1
+          folder: ""
+          type: file
+          disableDeletion: false
+          editable: true
+
+          options:
+            path: /var/lib/grafana/dashboards/default
+
+  dashboards:
+
+    default:
+
+      kubernetes-cluster:
+        gnetId: 15757
+        revision: 1
+        datasource: Prometheus
+
+      kubernetes-pods:
+        gnetId: 6417
+        revision: 1
+        datasource: Prometheus
+
+      node-exporter:
+        gnetId: 1860
+        revision: 37
+        datasource: Prometheus
+
+      spring-boot:
+        gnetId: 12900
+        revision: 1
+        datasource: Prometheus
+
+      jvm:
+        gnetId: 4701
+        revision: 1
+        datasource: Prometheus
+
+      argocd:
+        gnetId: 14584
+        revision: 1
+        datasource: Prometheus
+
+      jenkins:
+        gnetId: 9964
+        revision: 1
+        datasource: Prometheus
 
 prometheus:
 
   enabled: true
 
+  service:
+    type: ClusterIP
+
+  prometheusSpec:
+
+    retention: 15d
+
+    storageSpec:
+
+      volumeClaimTemplate:
+
+        spec:
+
+          storageClassName: gp2
+
+          accessModes:
+            - ReadWriteOnce
+
+          resources:
+
+            requests:
+              storage: 20Gi
 
 alertmanager:
 
   enabled: true
 
+  alertmanagerSpec:
+
+    storage:
+
+      volumeClaimTemplate:
+
+        spec:
+
+          storageClassName: gp2
+
+          accessModes:
+            - ReadWriteOnce
+
+          resources:
+
+            requests:
+              storage: 5Gi
 
 prometheusOperator:
+  enabled: true
 
+kubeStateMetrics:
+  enabled: true
+
+nodeExporter:
   enabled: true

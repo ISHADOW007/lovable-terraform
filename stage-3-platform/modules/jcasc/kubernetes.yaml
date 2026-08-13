@@ -1,0 +1,83 @@
+jenkins:
+
+  clouds:
+
+    - kubernetes:
+
+        name: "kubernetes"
+
+        serverUrl: "https://kubernetes.default"
+
+        namespace: "jenkins"
+
+        jenkinsUrl: "http://jenkins.jenkins.svc.cluster.local:8080"
+
+        jenkinsTunnel: "jenkins-agent:50000"
+
+        skipTlsVerify: true
+
+        containerCapStr: "20"
+
+        retentionTimeout: 5
+
+        connectTimeout: 30
+
+        readTimeout: 30
+
+        maxRequestsPerHostStr: "32"
+
+        templates:
+
+          - name: "default-agent"
+
+            label: "kubernetes"
+
+            namespace: "jenkins"
+
+            serviceAccount: "jenkins"
+
+            nodeUsageMode: NORMAL
+
+            idleMinutes: 5
+
+            instanceCap: 20
+
+            yamlMergeStrategy: "override"
+
+            yaml: |
+              apiVersion: v1
+              kind: Pod
+              metadata:
+                labels:
+                  jenkins: agent
+
+              spec:
+                serviceAccountName: jenkins
+                restartPolicy: Never
+
+                containers:
+                  - name: jnlp
+                    image: satyamgrao007/lovable-jenkins-agent:latest
+                    imagePullPolicy: Always
+                    tty: true
+                    workingDir: /home/jenkins/agent
+
+                    args:
+                      - $(JENKINS_SECRET)
+                      - $(JENKINS_NAME)
+
+                    resources:
+                      requests:
+                        cpu: "500m"
+                        memory: "1Gi"
+                      limits:
+                        cpu: "2"
+                        memory: "4Gi"
+
+                    volumeMounts:
+                      - name: workspace-volume
+                        mountPath: /home/jenkins/agent
+
+                volumes:
+                  - name: workspace-volume
+                    emptyDir: {}

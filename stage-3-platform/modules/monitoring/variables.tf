@@ -23,3 +23,9 @@ variable "prometheus_host" {
   type = string
 
 }
+
+
+variable "namespace" {
+  type    = string
+  default = "monitoring"
+}

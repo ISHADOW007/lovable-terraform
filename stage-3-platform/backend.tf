@@ -2,15 +2,15 @@ terraform {
 
   backend "s3" {
 
-    bucket         = "lovable-terraform-state-457724887427"
+    bucket = "lovable-terraform-state-457724887427"
 
-    key            = "stage-3-platform/terraform.tfstate"
+    key = "stage-3-platform/terraform.tfstate"
 
-    region         = "ap-south-1"
+    region = "ap-south-1"
 
     use_lockfile = true
 
-    encrypt        = true
+    encrypt = true
 
   }
 

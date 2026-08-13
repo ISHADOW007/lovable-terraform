@@ -1,0 +1,29 @@
+jenkins:
+
+  mode: NORMAL
+
+  numExecutors: 0
+
+  scmCheckoutRetryCount: 2
+
+  quietPeriod: 5
+
+  slaveAgentPort: 50000
+
+  noUsageStatistics: true
+
+  disabledAdministrativeMonitors:
+    - "jenkins.diagnostics.RootUrlNotSetMonitor"
+
+  remotingSecurity:
+    enabled: true
+
+  projectNamingStrategy:
+    standard: {}
+
+  markupFormatter:
+    plainText: {}
+
+  primaryView:
+    all:
+      name: "All"

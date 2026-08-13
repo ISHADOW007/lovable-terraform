@@ -42,6 +42,9 @@ resource "aws_eks_node_group" "this" {
 
   instance_types = var.instance_types
 
+  ami_type      = "AL2023_x86_64_STANDARD"
+  capacity_type = "ON_DEMAND"
+
   scaling_config {
     desired_size = var.desired_size
     min_size     = var.min_size
@@ -52,9 +55,10 @@ resource "aws_eks_node_group" "this" {
     max_unavailable = 1
   }
 
-  ami_type       = "AL2023_x86_64_STANDARD"
-  capacity_type  = "ON_DEMAND"
-  disk_size      = 20
+  launch_template {
+    id      = aws_launch_template.workers.id
+    version = "$Latest"
+  }
 
   depends_on = [
     aws_eks_cluster.this

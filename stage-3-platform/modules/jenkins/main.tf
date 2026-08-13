@@ -1,53 +1,72 @@
-resource "kubernetes_namespace" "this" {
-  metadata {
-    name = "jenkins"
-  }
-}
+############################################################
+# Namespace
+############################################################
+
+
+
+############################################################
+# Helm Release
+############################################################
 
 resource "helm_release" "this" {
-  name       = "jenkins"
+
+  name = "jenkins"
+
   repository = "https://charts.jenkins.io"
-  chart      = "jenkins"
-  namespace  = kubernetes_namespace.this.metadata[0].name
+
+  chart = "jenkins"
+
+  namespace = var.namespace
 
   create_namespace = false
 
-  wait    = true
-  timeout = 1200
+  wait = true
 
- set = [
-  {
-    name  = "controller.serviceType"
-    value = "ClusterIP"
-  },
+  timeout = 1800
 
-  {
-    name  = "persistence.enabled"
-    value = "true"
-  },
+  values = [
 
-  {
-    name  = "persistence.storageClass"
-    value = "gp2"
-  },
+    templatefile("${path.module}/values.yaml", {
 
-  {
-    name  = "persistence.size"
-    value = "20Gi"
-  },
+      ####################################################
+      # Jenkins
+      ####################################################
 
-  {
-    name  = "controller.admin.username"
-    value = "admin"
-  },
+      admin_user = var.jenkins_admin_user
 
-  {
-    name  = "controller.admin.password"
-    value = var.jenkins_admin_password
-  }
-]
+      admin_password = var.jenkins_admin_password
+
+      ####################################################
+      # Storage
+      ####################################################
+
+      storage_class = "gp2"
+
+      storage_size = "20Gi"
+
+    })
+
+  ]
+
+  ####################################################
+  # Dependencies
+  ####################################################
 
   depends_on = [
-    kubernetes_namespace.this
+
+    
+
+    kubernetes_service_account.jenkins,
+
+    kubernetes_role.jenkins,
+
+    kubernetes_role_binding.jenkins,
+
+
+
   ]
+
 }
+
+
+
