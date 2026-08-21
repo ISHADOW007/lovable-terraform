@@ -153,6 +153,16 @@ aws eks update-kubeconfig `
 
 
 
+
+
+
+
+
+
+
+
+
+
 Stage 2: External Secrets Operator
 
 What happens?
@@ -309,3 +319,37 @@ External Secrets Operator → Copies the secrets
 ClusterSecretStore → Tells the operator how to connect
 ExternalSecret → Tells the operator what to copy
 Kubernetes Secret → Used by the application
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+module "github_webhooks" {
+
+  source = "./modules/github"
+
+  github_owner = var.github_username
+
+  github_token = var.github_token
+
+  jenkins_url = "https://jenkins.snapcart.dev"
+
+  repositories = [
+    "distributed-lovable"
+  ]
+}

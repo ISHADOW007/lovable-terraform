@@ -36,3 +36,7 @@ grafana_admin_password = "grafanaPassword"
 github_owner    = "ISHADOW007"
 
 repository_name = "distributed-lovable"
+
+
+aws_region = "ap-south-1"
+

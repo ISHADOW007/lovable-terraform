@@ -80,10 +80,10 @@ module "eks" {
 
   node_group_name = "lovable-cluster-nodes"
 
-  instance_types = ["t3.small"]
+  instance_types = ["c7i-flex.large"]
 
-  desired_size = 28
-  min_size     = 28
+  desired_size = 2
+  min_size     = 2
   max_size     = 28
 
   tags = local.common_tags

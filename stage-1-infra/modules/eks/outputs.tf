@@ -14,3 +14,15 @@ output "cluster_ca_certificate" {
 output "oidc_issuer_url" {
   value = aws_eks_cluster.this.identity[0].oidc[0].issuer
 }
+
+
+output "node_group_name" {
+
+  value = aws_eks_node_group.this.node_group_name
+}
+
+
+output "node_role_arn" {
+
+  value = var.node_role_arn
+}

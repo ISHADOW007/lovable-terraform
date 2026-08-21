@@ -108,25 +108,23 @@ module "namespaces" {
   source = "./modules/namespaces"
 }
 
-module "ingress" {
 
-  source = "./modules/ingress"
 
-  namespace = var.namespace
 
-  certificate_arn = module.acm.certificate_arn
 
-  frontend_host = var.frontend_host
-  api_host      = var.api_host
-  preview_host  = var.preview_host
 
-  frontend_service = var.frontend_service
-  api_service      = var.api_service
-  preview_service  = var.preview_service
 
-  depends_on = [
-    module.namespaces
-  ]
+module "cluster_autoscaler" {
+
+  source = "./modules/cluster-autoscaler"
+
+  cluster_name = data.terraform_remote_state.infra.outputs.cluster_name
+
+  region = data.terraform_remote_state.infra.outputs.region
+
+   oidc_provider = data.terraform_remote_state.infra.outputs.oidc_issuer_url
+
+  oidc_provider_arn = data.terraform_remote_state.infra.outputs.oidc_provider_arn
+
+  chart_version = var.cluster_autoscaler_chart_version
 }
-
-

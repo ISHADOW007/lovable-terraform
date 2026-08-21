@@ -26,12 +26,6 @@ resource "aws_eks_cluster" "this" {
 }
 
 
-
-
-
-
-
-
 resource "aws_eks_node_group" "this" {
 
   cluster_name    = aws_eks_cluster.this.name
@@ -46,16 +40,21 @@ resource "aws_eks_node_group" "this" {
   capacity_type = "ON_DEMAND"
 
   scaling_config {
+
     desired_size = var.desired_size
-    min_size     = var.min_size
-    max_size     = var.max_size
+
+    min_size = var.min_size
+
+    max_size = var.max_size
   }
 
   update_config {
+
     max_unavailable = 1
   }
 
   launch_template {
+
     id      = aws_launch_template.workers.id
     version = "$Latest"
   }
@@ -64,5 +63,19 @@ resource "aws_eks_node_group" "this" {
     aws_eks_cluster.this
   ]
 
-  tags = var.tags
+  tags = merge(
+    var.tags,
+    {
+      "k8s.io/cluster-autoscaler/enabled" = "true"
+
+      "k8s.io/cluster-autoscaler/${var.cluster_name}" = "owned"
+    }
+  )
+
+  lifecycle {
+
+    ignore_changes = [
+      scaling_config[0].desired_size
+    ]
+  }
 }

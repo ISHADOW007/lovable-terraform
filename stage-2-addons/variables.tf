@@ -35,3 +35,14 @@ variable "api_service" {
 variable "preview_service" {
   default = "lovable-me-proxy"
 }
+
+
+variable "cluster_autoscaler_chart_version" {
+
+  type = string
+}
+
+variable "tags" {
+  type    = map(string)
+  default = {}
+}

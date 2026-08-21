@@ -189,11 +189,9 @@ module "monitoring" {
   ]
 
 }
-
 ############################################################
 # logging
 ############################################################
-
 module "logging" {
 
   source = "./modules/logging"
@@ -205,6 +203,8 @@ module "logging" {
   ]
 
 }
+
+
 ############################################################
 # Jenkins
 ############################################################
@@ -242,6 +242,7 @@ gitops_token    = var.gitops_token
   ]
 }
 
+
 ############################################################
 # SonarQube
 ############################################################
@@ -253,6 +254,7 @@ gitops_token    = var.gitops_token
 # Jenkins JCasC
 ############################################################
 
+
 module "jcasc" {
   source = "./modules/jcasc"
 
@@ -263,17 +265,6 @@ module "jcasc" {
 
 
 
-module "github_webhooks" {
 
-  source = "./modules/github"
 
-  github_owner = var.github_username
 
-  github_token = var.github_token
-
-  jenkins_url = "https://jenkins.snapcart.dev"
-
-  repositories = [
-    "distributed-lovable"
-  ]
-}
